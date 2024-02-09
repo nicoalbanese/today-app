@@ -46,8 +46,6 @@ export default async function Home() {
           minutes left in the day.
         </p>
       </div>
-      {endOfDay ? <ReflectionTaker /> : null}
-
       <div className="mt-8">
         {focus === undefined ? (
           <div className="space-y-0 border border-border p-8">
@@ -58,6 +56,7 @@ export default async function Home() {
           <Today focus={focus} />
         )}
       </div>
+      {endOfDay ? <ReflectionTaker /> : null}
     </main>
   );
 }

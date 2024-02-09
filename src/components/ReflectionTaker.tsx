@@ -12,7 +12,7 @@ export default async function ReflectionTaker() {
     );
   return (
     <main className="my-8 bg-green-200 dark:bg-green-800 p-8 font-mono font-bold">
-      Reflection submitted 😊
+      Daily Reflection submitted 😊 <br /> Get a good night sleep.
     </main>
   );
 }
