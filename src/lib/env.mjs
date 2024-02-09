@@ -6,18 +6,18 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    DATABASE_URL: z.string().min(1),
-    
-    POSTGRES_URL: z.string().min(1),
-    POSTGRES_URL_NON_POOLING: z.string().min(1),
-    POSTGRES_USER: z.string().min(1),
-    POSTGRES_HOST: z.string().min(1),
-    POSTGRES_PASSWORD: z.string().min(1),
-    POSTGRES_DATABASE: z.string().min(1),
-    RESEND_API_KEY: z.string().min(1),
+    DATABASE_URL: z.string(),
+
+    POSTGRES_URL: z.string(),
+    POSTGRES_URL_NON_POOLING: z.string(),
+    POSTGRES_USER: z.string(),
+    POSTGRES_HOST: z.string(),
+    POSTGRES_PASSWORD: z.string(),
+    POSTGRES_DATABASE: z.string(),
+    RESEND_API_KEY: z.string(),
   },
   client: {
-            // NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
+    // NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   // runtimeEnv: {
@@ -26,6 +26,6 @@ export const env = createEnv({
   // },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   experimental__runtimeEnv: {
-            // NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
+    // NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
   },
 });

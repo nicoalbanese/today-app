@@ -1,9 +1,11 @@
-import AuthForm from "@/components/auth/Form";
-import { getUser, updateUser } from "@/lib/api/users/queries";
-import { getUserAuth } from "@/lib/auth/utils";
+import Today from "@/components/Today";
+import FocusForm from "@/components/focuses/FocusForm";
+import { getTodaysFocus } from "@/lib/api/focuses/queries";
+import { getUser } from "@/lib/api/users/queries";
 
 export default async function Home() {
   const { user } = await getUser();
+  const { focus } = await getTodaysFocus();
   const ageInDays = Math.ceil(
     (new Date().getTime() - new Date(user?.birthday ?? "").getTime()) /
       (1000 * 60 * 60 * 24),
@@ -24,21 +26,34 @@ export default async function Home() {
 
   return (
     <main className="">
-      <h1 className="text-2xl font-bold my-2">
+      <h1 className="text-2xl font-bold my-4">
         Hey {user?.name?.split(" ")[0] ?? ""} 👋🏻
       </h1>
       <div className="space-y-4">
         <p>
           Today is your{" "}
-          <span className="font-bold">{ageInDays.toLocaleString()}th</span> day
-          on this earth.
+          <span className="p-1 mx-1 bg-muted font-mono">
+            {ageInDays.toLocaleString()}th
+          </span>{" "}
+          day on this earth.
         </p>
         <p>You will only be able to live this day once, so make it count. </p>
         <p>
-          You still have <span>{timeString} minutes left.</span>
+          You still have{" "}
+          <span className="p-1 mx-1 bg-muted font-mono">{timeString}</span>{" "}
+          minutes left.
         </p>
       </div>
-      <div></div>
+      <div className="mt-8">
+        {focus === undefined ? (
+          <div className="space-y-0 border border-border p-8">
+            <h3 className="font-medium text-xl mb-2">Pick a focus for today</h3>
+            <FocusForm />
+          </div>
+        ) : (
+          <Today focus={focus} />
+        )}
+      </div>
     </main>
   );
 }

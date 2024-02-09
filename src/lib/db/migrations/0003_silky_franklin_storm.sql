@@ -1,0 +1,1 @@
+ALTER TABLE "focuses" ALTER COLUMN "completed" SET DEFAULT false;
