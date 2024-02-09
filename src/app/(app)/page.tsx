@@ -1,5 +1,7 @@
+import ReflectionTaker from "@/components/ReflectionTaker";
 import Today from "@/components/Today";
 import FocusForm from "@/components/focuses/FocusForm";
+import ReflectionForm from "@/components/reflections/ReflectionForm";
 import { getTodaysFocus } from "@/lib/api/focuses/queries";
 import { getUser } from "@/lib/api/users/queries";
 
@@ -21,11 +23,11 @@ export default async function Home() {
   const minutes = totalMinutes % 60;
 
   // Create the formatted time string
-  const timeString =
-    hours < 0 && minutes < 0 ? "0hr 0min" : `${hours}hr ${minutes}min`;
+  const endOfDay = hours < 0 && minutes < 0;
+  const timeString = endOfDay ? "0hr 0min" : `${hours}hr ${minutes}min`;
 
   return (
-    <main className="">
+    <main className="max-w-xl mx-auto pt-2 p-8 ">
       <h1 className="text-2xl font-bold my-4">
         Hey {user?.name?.split(" ")[0] ?? ""} 👋🏻
       </h1>
@@ -41,9 +43,11 @@ export default async function Home() {
         <p>
           You still have{" "}
           <span className="p-1 mx-1 bg-muted font-mono">{timeString}</span>{" "}
-          minutes left.
+          minutes left in the day.
         </p>
       </div>
+      {endOfDay ? <ReflectionTaker /> : null}
+
       <div className="mt-8">
         {focus === undefined ? (
           <div className="space-y-0 border border-border p-8">

@@ -11,9 +11,7 @@ export default async function AppLayout({
   return (
     <main>
       <div className="flex h-screen">
-        <main className="flex-1 md:p-8 max-w-xl mx-auto pt-2 p-8 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 md:p-8 overflow-y-auto">{children}</main>
       </div>
       <Toaster richColors />
     </main>

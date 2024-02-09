@@ -19,7 +19,6 @@ export const focuses = pgTable("focuses", {
     .$defaultFn(() => nanoid()),
   content: text("content").notNull(),
   completed: boolean("completed").notNull().default(false),
-  location: varchar("location", { length: 256 }).notNull(),
   userId: varchar("user_id", { length: 256 }).notNull(),
 
   createdAt: timestamp("created_at")

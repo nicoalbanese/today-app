@@ -8,49 +8,51 @@ import { toast } from "sonner";
 import { useValidatedForm } from "@/lib/hooks/useValidatedForm";
 
 import { type Action, cn } from "@/lib/utils";
-import { type TAddOptimistic } from "@/app/(app)/focuses/useOptimisticFocuses";
+import { type TAddOptimistic } from "@/app/(app)/reflections/useOptimisticReflections";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useBackPath } from "@/components/shared/BackButton";
 
-import { Checkbox } from "@/components/ui/checkbox";
-
-import { type Focus, insertFocusParams } from "@/lib/db/schema/focuses";
 import {
-  createFocusAction,
-  deleteFocusAction,
-  updateFocusAction,
-} from "@/lib/actions/focuses";
+  type Reflection,
+  insertReflectionParams,
+} from "@/lib/db/schema/reflections";
+import {
+  createReflectionAction,
+  deleteReflectionAction,
+  updateReflectionAction,
+} from "@/lib/actions/reflections";
+import { Textarea } from "../ui/textarea";
 
-const FocusForm = ({
-  focus,
+const ReflectionForm = ({
+  reflection,
   openModal,
   closeModal,
   addOptimistic,
   postSuccess,
 }: {
-  focus?: Focus | null;
+  reflection?: Reflection | null;
 
-  openModal?: (focus?: Focus) => void;
+  openModal?: (reflection?: Reflection) => void;
   closeModal?: () => void;
   addOptimistic?: TAddOptimistic;
   postSuccess?: () => void;
 }) => {
   const { errors, hasErrors, setErrors, handleChange } =
-    useValidatedForm<Focus>(insertFocusParams);
-  const editing = !!focus?.id;
+    useValidatedForm<Reflection>(insertReflectionParams);
+  const editing = !!reflection?.id;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [pending, startMutation] = useTransition();
 
   const router = useRouter();
-  const backpath = useBackPath("focuses");
+  const backpath = useBackPath("reflections");
 
   const onSuccess = (
     action: Action,
-    data?: { error: string; values: Focus },
+    data?: { error: string; values: Reflection },
   ) => {
     const failed = Boolean(data?.error);
     if (failed) {
@@ -61,7 +63,7 @@ const FocusForm = ({
     } else {
       router.refresh();
       postSuccess && postSuccess();
-      toast.success(`Focus ${action}d!`);
+      toast.success(`Reflection ${action}d!`);
       if (action === "delete") router.push(backpath);
     }
   };
@@ -70,36 +72,38 @@ const FocusForm = ({
     setErrors(null);
 
     const payload = Object.fromEntries(data.entries());
-    const focusParsed = await insertFocusParams.safeParseAsync({ ...payload });
-    if (!focusParsed.success) {
-      setErrors(focusParsed?.error.flatten().fieldErrors);
+    const reflectionParsed = await insertReflectionParams.safeParseAsync({
+      ...payload,
+    });
+    if (!reflectionParsed.success) {
+      setErrors(reflectionParsed?.error.flatten().fieldErrors);
       return;
     }
 
     closeModal && closeModal();
-    const values = focusParsed.data;
-    const pendingFocus: Focus = {
-      updatedAt: focus?.updatedAt ?? new Date(),
-      createdAt: focus?.createdAt ?? new Date(),
-      id: focus?.id ?? "",
-      userId: focus?.userId ?? "",
+    const values = reflectionParsed.data;
+    const pendingReflection: Reflection = {
+      updatedAt: reflection?.updatedAt ?? new Date(),
+      createdAt: reflection?.createdAt ?? new Date(),
+      id: reflection?.id ?? "",
+      userId: reflection?.userId ?? "",
       ...values,
     };
     try {
       startMutation(async () => {
         addOptimistic &&
           addOptimistic({
-            data: pendingFocus,
+            data: pendingReflection,
             action: editing ? "update" : "create",
           });
 
         const error = editing
-          ? await updateFocusAction({ ...values, id: focus.id })
-          : await createFocusAction(values);
+          ? await updateReflectionAction({ ...values, id: reflection.id })
+          : await createReflectionAction(values);
 
         const errorFormatted = {
           error: error ?? "Error",
-          values: pendingFocus,
+          values: pendingReflection,
         };
         onSuccess(
           editing ? "update" : "create",
@@ -123,13 +127,12 @@ const FocusForm = ({
             errors?.content ? "text-destructive" : "",
           )}
         >
-          Content
+          Reflection
         </Label>
-        <Input
-          type="text"
+        <Textarea
           name="content"
           className={cn(errors?.content ? "ring ring-destructive" : "")}
-          defaultValue={focus?.content ?? ""}
+          defaultValue={reflection?.content ?? ""}
         />
         {errors?.content ? (
           <p className="text-xs text-destructive mt-2">{errors.content[0]}</p>
@@ -137,28 +140,48 @@ const FocusForm = ({
           <div className="h-6" />
         )}
       </div>
-      {/* <div> */}
-      {/*   <Label */}
-      {/*     className={cn( */}
-      {/*       "mb-2 inline-block", */}
-      {/*       errors?.completed ? "text-destructive" : "", */}
-      {/*     )} */}
-      {/*   > */}
-      {/*     Completed */}
-      {/*   </Label> */}
-      {/*   <br /> */}
-      {/*   <Checkbox */}
-      {/*     defaultChecked={focus?.completed} */}
-      {/*     name={"completed"} */}
-      {/*     className={cn(errors?.completed ? "ring ring-destructive" : "")} */}
-      {/*   /> */}
-      {/*   {errors?.completed ? ( */}
-      {/*     <p className="text-xs text-destructive mt-2">{errors.completed[0]}</p> */}
-      {/*   ) : ( */}
-      {/*     <div className="h-6" /> */}
-      {/*   )} */}
-      {/* </div> */}
-
+      <div>
+        <Label
+          className={cn(
+            "mb-2 inline-block",
+            errors?.location ? "text-destructive" : "",
+          )}
+        >
+          Where are you?
+        </Label>
+        <Input
+          type="text"
+          name="location"
+          className={cn(errors?.location ? "ring ring-destructive" : "")}
+          defaultValue={reflection?.location ?? ""}
+        />
+        {errors?.location ? (
+          <p className="text-xs text-destructive mt-2">{errors.location[0]}</p>
+        ) : (
+          <div className="h-6" />
+        )}
+      </div>
+      <div>
+        <Label
+          className={cn(
+            "mb-2 inline-block",
+            errors?.rating ? "text-destructive" : "",
+          )}
+        >
+          Rating (out of 10)
+        </Label>
+        <Input
+          type="text"
+          name="rating"
+          className={cn(errors?.rating ? "ring ring-destructive" : "")}
+          defaultValue={reflection?.rating ?? ""}
+        />
+        {errors?.rating ? (
+          <p className="text-xs text-destructive mt-2">{errors.rating[0]}</p>
+        ) : (
+          <div className="h-6" />
+        )}
+      </div>
       {/* Schema fields end */}
 
       {/* Save Button */}
@@ -174,12 +197,13 @@ const FocusForm = ({
             setIsDeleting(true);
             closeModal && closeModal();
             startMutation(async () => {
-              addOptimistic && addOptimistic({ action: "delete", data: focus });
-              const error = await deleteFocusAction(focus.id);
+              addOptimistic &&
+                addOptimistic({ action: "delete", data: reflection });
+              const error = await deleteReflectionAction(reflection.id);
               setIsDeleting(false);
               const errorFormatted = {
                 error: error ?? "Error",
-                values: focus,
+                values: reflection,
               };
 
               onSuccess("delete", error ? errorFormatted : undefined);
@@ -193,7 +217,7 @@ const FocusForm = ({
   );
 };
 
-export default FocusForm;
+export default ReflectionForm;
 
 const SaveButton = ({
   editing,
